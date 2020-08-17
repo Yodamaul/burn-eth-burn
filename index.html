@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.1/seedrandom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- UIkit CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.6/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.6/js/uikit.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.6/js/uikit-icons.min.js"></script>
+   <style> body,html{
+          background-color:black
+    }
+    
+    .uk-modal.uk-open{
+background: white
+
+    }
+    .Center-Container {
+  position: relative;
+  height: 100%;
+}
+
+.uk-modal-close-outside{color:black!important}
+
+.Absolute-Center {
+  width: 500px;
+  height: 500px;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  border: solid black;
+}
+
+    </style>
+    </head>
+<body>
+      <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                  <a class="uk-navbar-item uk-logo" href="#">Burn Eth Burn</a>
+                    <li><a href="#modal-full" uk-toggle>About</a></li>
+                    <li><a href="#modal-media-image" uk-toggle>QR Code</a></li>
+                    <li><a href="#modal-media-image" class="uk-disabled">How does it Work?</a></li>
+                </ul>
+            </div>
+
+            <div class="uk-navbar-right">
+
+                  <ul class="uk-navbar-nav">
+                 
+                      <li><a href="#">Progress:  <span class="progress"> </span>%</a></li>
+                  </ul>
+          
+              </div>
+        </nav>
+
+        <div id="modal-media-image" class="uk-flex-top uk-light" uk-modal>
+            <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+                <button class="uk-light uk-modal-close-outside" type="button" uk-close></button>
+                <img src="qrcode.png" alt="">
+            </div>
+        </div>
+
+<div id="modal-full" class="uk-modal-full" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+        <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
+            <div class="uk-background-cover" style="background-image: url('unnamed.png');" uk-height-viewport></div>
+            <div class="uk-padding-large">
+                <h1>About</h1>
+                <p>This project is an art piece that aims to rebel again the fundamental structure of capitalism. By "burning" Ethereum for little more than a pixel in an incomplete piece, we aim to simulate the difficult psychological behaviours in the act of burning actual money. Once 250K people have burned their ETH, we will arrive at a picture, that a quarter of a million people came together to build. </p>
+                  
+                <h5>Send ETH to this address to participate: 0x000000000000000000000000000000000000dead</h5>
+                <h3>Burn Baby Burn (2019)</h3>
+                <p class="uk-text-meta">Blockchain on Web Canvas, LED Screen <br>500x500px, dimensions variable
+                </p>
+                  <h5>Team Members:</h5>
+                  <ul>
+                        <li>Dara Gill</li>
+                        <li>Pushkar Kadar</li>
+                        <li>Reija Meriläinen</li>
+                        <li>Kush Pakki</li>
+                        <li>Tom Terado</li>
+                  </ul>
+                  
+                  <p class="uk-text-meta">Special Thanks To: BitFWD and Blocumenta</p>
+            </div>
+        </div>
+    </div>
+</div>
+<canvas class="Absolute-Center" id="myCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+<script>
+var index = 0;
+      var canvas = document.getElementById("myCanvas");
+      
+canvas.width  = 500;
+canvas.height = 500;
+
+var center= {x:Math.floor(canvas.width/2),y:Math.floor(canvas.height/2)};
+var n = 3;
+function countBorderSquares(){
+      return 4*(n-1);
+}
+var around=false;
+function nextSquare(x,y){
+var ix=1,iy=1;
+var nx=x, ny = y;
+
+ if(ix==nx&iy==ny&&around){n=n+2;around=false;
+}
+else if(x<n&&y==1&&!around){
+      nx++;around=false;
+}
+else if(y<n&&x==n&&!around){
+      ny++;
+}
+else if(x==n){
+      nx--;
+}
+else if(x<n&&y==n&&x>1){
+      nx--;
+}
+else if(y==n){
+      ny--;
+}
+
+else if(y<n&&x==1){
+      ny--;around=true
+}
+
+return [nx,ny]
+}
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function convertBordertoCoords(x,y){
+var cen = Math.ceil(n/2);
+
+var cx =0,cy=0;
+cx = center.x + (x - cen);
+cy = center.y + (y-cen);
+return [cx,cy]
+}
+function generateColor(hash){
+var start = getRandomInt(0,hash.length - 7);
+var s = hash.substr(start,6);
+s  = "#" + s;
+var col = hexToRgb(s);
+if(col == null){
+ col = {r:255,g:255,b:255};
+
+}
+
+return col;
+
+}
+
+function goAroundGrid(nt){
+var x = 1, y =1;
+var ix=1,iy=1;
+
+for(var ii =0;ii < nt;ii++){
+var numTimes = countBorderSquares()+1;
+for(var j = 0;j<numTimes;j++){
+    
+     var n =  nextSquare(x,y)
+     x=n[0],y=n[1];
+    
+var coords = convertBordertoCoords(x,y); 
+fillColor(coords[0],coords[1],getRandomInt(0,255),getRandomInt(0,255),getRandomInt(0,255))
+index++;
+}
+
+}
+}
+var x =1,y=1,ix=1,iy=1;
+function onNewThingy(hash){ 
+   
+    var n =  nextSquare(x,y)
+     x=n[0],y=n[1];
+    var color = (generateColor(hash));
+   
+var coords = convertBordertoCoords(x,y); 
+fillColor(coords[0],coords[1],color.r,color.g,color.b)
+index++;}
+
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+
+var ctx = canvas.getContext("2d");
+
+function fillColor( x, y, red, green, blue) {
+ 
+      ctx.fillStyle = "rgba("+red+","+green+","+blue+","+1+")";
+ctx.fillRect( x, y, 2, 2 );   
+
+}
+
+var numberOfT = 0 ;
+var old = 0;
+var data;
+
+
+function getHashes(arr){
+      var array = [];
+for(var index in arr){
+array[index] = arr[index].blockHash;
+
+
+}
+return array;
+
+}
+function getTransactions(){
+var apiKey = "D2S9JGWEJUF1GQRPIC6VAKHH5B2KE7X754";
+var Http = new XMLHttpRequest();
+var url='https://api.etherscan.io/api?module=account&action=txlist&address=0x000000000000000000000000000000000000dead&startblock=0&endblock=9999999&sort=asc&apikey='+apiKey;
+Http.open("GET", url);
+Http.send();
+var done = false;
+Http.onreadystatechange = (e) => {
+if(!done){
+  data = JSON.parse(Http.responseText);
+  data = data.result;
+  data = getHashes(data);
+
+  $(".progress").text(data.length/(500*500));
+  for(var i in data){
+      
+onNewThingy(data[i]);
+
+  }
+}
+
+done = true;
+
+}
+}
+
+getTransactions();
+</script>
+
+</body>
+</html>
+
